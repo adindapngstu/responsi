@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Review Form</title>
+</head>
+<body>
+    <h2>Test Review Submission</h2>
+    <form id="reviewForm">
+        <div>
+            <label>University ID:</label>
+            <input type="number" name="univ_id" value="1" required>
+        </div>
+        <div>
+            <label>Rating:</label>
+            <select name="rating" required>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+        </div>
+        <div>
+            <label>Review:</label>
+            <textarea name="review" required></textarea>
+        </div>
+        <button type="submit">Submit Review</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('reviewForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            // Log the form data
+            console.log('Submitting data:');
+            for (let pair of formData.entries()) {
+                console.log(pair[0] + ': ' + pair[1]);
+            }
+
+            fetch('save_review.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(text => {
+                console.log('Raw response:', text);
+                document.getElementById('result').textContent = text;
+                return JSON.parse(text);
+            })
+            .then(data => {
+                if (data.success) {
+                    alert('Review submitted successfully!');
+                } else if (data.error) {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error: ' + error.message);
+            });
+        });
+    </script>
+</body>
+</html>
